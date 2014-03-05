@@ -1,4 +1,5 @@
 # -*- coding: utf-8
+# @mtrpires - http://github.com/mtrpires
 from crawlerFunctions import changePage
 from crawlerFunctions import createCSV
 from crawlerFunctions import downloadHTML
