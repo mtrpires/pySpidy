@@ -1,4 +1,7 @@
 # -*- coding: utf-8
+#
+# @mtrpires - http://github.com/mtrpires
+
 import csv
 import re
 import urllib
