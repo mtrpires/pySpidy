@@ -14,7 +14,7 @@ Bear in mind that Google doesn't approve scraping their search results. For that
 How does it work?
 -----------------
 
-Internally, pySpidy works by defining a class which holds all the information of the query, such as link, date, description and title. There is a browser object (powered by [mechanize](http://wwwsearch.sourceforge.net/mechanize/)) that handles the HTTP requests. Those are parsed to a [Beautiful Soup](http://www.crummy.com/software/BeautifulSoup/) object that are manipulated by helper data-mining funcions. The crawler itself is a simple script that calls those functions and cycle through the result pages at Google. It stores everything it finds in a CSV file. It tells you mostly everything it does in the console and it handles some errors with more than just a callback.
+Internally, pySpidy works by defining a class which holds all the information of the query, such as link, date, description and title. There is a browser object (powered by [mechanize](http://wwwsearch.sourceforge.net/mechanize/)) that handles the HTTP requests. Those are parsed to a [Beautiful Soup](http://www.crummy.com/software/BeautifulSoup/) object that are manipulated by data-mining helper funcions. The crawler itself is a simple script that calls those functions and cycle through the result pages at Google. It stores everything it finds in a CSV file. It tells you mostly everything it does in the console and it handles some errors with more than just a callback.
 
 pySpidy uses two external Python libraries:
 
