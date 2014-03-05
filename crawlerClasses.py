@@ -1,6 +1,6 @@
 # -*- coding: utf-8
 # 
-# @mtrpires
+# @mtrpires - http://github.com/mtrpires
 
 class MediaObject(object):
     """
