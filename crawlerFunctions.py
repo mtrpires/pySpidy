@@ -48,7 +48,7 @@ def setSearchParams(site, searchTerm, dateMin, dateMax, perPage=100, start=0):
     start: from which result to start - 0, 12, 100 etc - integer
     dateMin: lower limit to search - ex. 05/31/2012 - string, US format
     dateMax: upper limit to search - ex. 12/27/2013 - string, US format
-    perPafe: the ammount of results per page - ex. 75, 15 (max is 100) - integer
+    perPage: the ammount of results per page - ex. 75, 15 (max is 100) - integer
     
     returns: an encoded string, ready to be parsed to the browser
     """
