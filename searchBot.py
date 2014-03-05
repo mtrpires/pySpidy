@@ -15,13 +15,13 @@ from random import uniform
 baseURL = "https://www.google.com/search?"
 
 # Initial params
-kind = "PM"
+kind = "Revista"
 site = "revistaepoca.globo.com"
 searchTerm = "Eike Batista"
 dateMin = "05/01/2012"
 dateMax = "05/31/2013"
 perPage = 10
-start = 0 #page 7
+start = 0
 
 # Gets the encoded URL to start the search
 params = setSearchParams(site, searchTerm, dateMin, dateMax, perPage, start)
@@ -65,22 +65,3 @@ for page in range(pages-start/10):
 #fetchLinks(objectList)
 
 print "The end."
-
-# Portais
-# "Terra" http://noticias.terra.com.br/
-# "Uol" http://noticias.uol.com.br/
-# "G1" http://g1.globo.com/
-# 
-# Revistas
-# "Veja" http://veja.abril.com.br/noticias/
-# "Época" http://revistaepoca.globo.com/
-# "IstoÉ" http://www.istoe.com.br/
-# 
-# Jornais
-# "Folha" http://folha.uol.com.br/ -blogs
-# "Estadão" http://estadao.con.br/noticias
-# "Globo" http://oglobo.globo.com/ -blogs
-# 
-# Blogs
-# "Nassif" http://www.advivo.com.br/luisnassif/
-# "Simon" http://www.schwartzman.org.br/sitesimon/
