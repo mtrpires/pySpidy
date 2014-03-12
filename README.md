@@ -7,7 +7,7 @@ pySpidy is a Python (2.7) webcrawler for Google with browser capabilities. It do
 Intro
 -----
 
-pySpidy was born out of a mid-2013 personal project to extract information from Google and export it to a CSV file. I'm a journalist who happens to code a little in Python. At that time, I couldn't find any Python crawlers that worked with Google. They were either broken or Google had banned them. It may be the case that Google has already banned mine. They are very good at figuring out your robot is not a person using an actual browser.
+pySpidy was born out of a mid-2013 personal project to study how to build a web scraper out of Python extracting information from Google, exporting it to a CSV file and downloading the HTML content from the result links. I'm a journalist who happens to code a little in Python. At that time, I couldn't find any Python crawlers that worked with Google. They were either broken or Google had banned them. It may be the case that Google has already banned mine. They are very good at figuring out your robot is not a person using an actual browser.
 
 Bear in mind that Google doesn't approve scraping their search results. For that, they have a [custom search API](https://developers.google.com/custom-search/json-api/v1/overview). For free, you get 100 results per day. More than that you'll have to show them your monies. Use this tool at your own discretion.
 
