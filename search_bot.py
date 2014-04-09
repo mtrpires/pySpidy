@@ -1,14 +1,14 @@
 # -*- coding: utf-8
 # @mtrpires - http://github.com/mtrpires
-from crawlerFunctions import changePage
-from crawlerFunctions import createCSV
-from crawlerFunctions import downloadHTML
-from crawlerFunctions import fetchLinks
-from crawlerFunctions import findContent
-from crawlerFunctions import findResults
-from crawlerFunctions import numPages
-from crawlerFunctions import setSearchParams
-from crawlerFunctions import storeInfo
+from crawler_functions import changePage
+from crawler_functions import createCSV
+from crawler_functions import downloadHTML
+from crawler_functions import fetchLinks
+from crawler_functions import findContent
+from crawler_functions import findResults
+from crawler_functions import numPages
+from crawler_functions import setSearchParams
+from crawler_functions import storeInfo
 from time import sleep
 from random import uniform
 
@@ -36,10 +36,10 @@ pages = numPages(results)
 # createCSV()
 # empty list where MediaObjects will live.
 objectList = []
-# The search routine. It goes from page one 
+# The search routine. It goes from page one
 # until results/10 + 1 pages. Ex. 213 results will
 # render 22 pages. 21 with 10 results, a last one with 3.
-# This is only an estimate. Google itself sometimes is 
+# This is only an estimate. Google itself sometimes is
 # not 100% sure how many results it gets.
 for page in range(pages-start/10):
     # Random sleep
