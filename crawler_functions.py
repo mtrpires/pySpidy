@@ -10,15 +10,15 @@ import mechanize
 import os
 
 from bs4 import BeautifulSoup
-from crawlerClasses import MediaObject
+from crawler_classes import MediaObject
 
 # Googles base search URL
 baseURL = "https://www.google.com/search?"
 
+
 def browserInit():
     """
     Initiates browser session. Change user agent to your liking.
-    
     returns: a browser object to be called by other functions.
     """
     br = mechanize.Browser()
@@ -34,7 +34,9 @@ def browserInit():
     br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
 
     # User-Agent (this is cheating, ok?)
-    br.addheaders = [('User-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0')]
+    br.addheaders = [('User-agent',
+                      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) \
+                      Gecko/20100101 Firefox/21.0')]
     return br
 
 
@@ -42,58 +44,59 @@ def setSearchParams(site, searchTerm, dateMin, dateMax, perPage=100, start=0):
     """
     Defines Google search params
     site: ex. "veja.abril.com.br" - string
-    
+
     >> If you don't want to use a specific website, please
     consider editing the code to remove the 'site:%s ' from
     the parameters.
-    
+
     searchTerm = ex. "Ciencia sem fronteiras" - string
     start: from which result to start - 0, 12, 100 etc - integer
     dateMin: lower limit to search - ex. 05/31/2012 - string, US format
     dateMax: upper limit to search - ex. 12/27/2013 - string, US format
-    perPage: the ammount of results per page - ex. 75, 15 (max is 100) - integer
-    
+    perPage: the ammount of results per page - ex. 75,15 (max is 100) - integer
+
     returns: an encoded string, ready to be parsed to the browser
     """
 
-    site = site # example: veja.abril.com.br/noticia
-    searchTerm = searchTerm # example: 'Ciencia sem fronteiras'
-    start = start # From which result to start: '0', '100', '200' etc
-    dateMin = dateMin # example: 01/05/2012
-    dateMax = dateMax # example: 31/05/2013
-    perPage = perPage # example: 75, 100 etc - doesn't seem to work when 
+    site = site  # example: veja.abril.com.br/noticia
+    searchTerm = searchTerm  # example: 'Ciencia sem fronteiras'
+    start = start  # From which result to start: '0', '100', '200' etc
+    dateMin = dateMin  # example: 01/05/2012
+    dateMax = dateMax  # example: 31/05/2013
+    perPage = perPage  # example: 75, 100 etc - doesn't seem to work when
     # dateMin/Max are used. It's fine otherwise
 
     # These are some of the parameters Google uses to find pages
-    queryParams = {
-    		"q": 'site:%s "%s"' % (site, searchTerm),
-    		"start": "%d" % start,
-    		"tbs": "cdr:1,cd_min:%s,cd_max:%s" % (dateMin, dateMax),
-            "num": "%d" % perPage,
-    	}
+    queryParams = {"q": 'site:%s "%s"' % (site, searchTerm),
+                   "start": "%d" % start,
+                   "tbs": "cdr:1,cd_min:%s,cd_max:%s" % (dateMin, dateMax),
+                   "num": "%d" % perPage,
+                   }
 
     # urllib.urlencode converts queryParams elements into x=y& pairs
     params = urllib.urlencode(queryParams)
 
     return params
 
+
 def downloadHTML(baseURL, params):
     """
     Downloads the HTML from Google.
     baseURL: https://google.com/search?
     Params: an encoded string from setSearchParams()
-    
+
     returns: an HTML Beautiful Soup object.
     """
     HTML = browserInit().open(baseURL+params).read()
     HTMLsoup = BeautifulSoup(HTML)
     return HTMLsoup
 
+
 def findContent(HTMLsoup):
     """
     Finds the relevant list of HTML elements in a
     Google Search using the soup.
-    
+
     returns: a list of bs4 objects with Google results.
     """
     # <li class="g"> is where all google search results are
@@ -101,20 +104,20 @@ def findContent(HTMLsoup):
 
     return contentList
 
-# Deprecated - It saves a step by combining 
+# Deprecated - It saves a step by combining
 # findContent() and downloadHTML()
 # def parseGooglePage(baseURL, params):
 #     HTMLSoup = downloadHTML(baseURL, params)
 #     contentList = findContent(HTMLSoup)
-#     
+#
 #     return contentList
 
 
 def findResults(HTMLsoup):
     """
-    Finds the number of results in the HTMLSoup. Useful 
+    Finds the number of results in the HTMLSoup. Useful
     to define how many pages there are to advance.
-    
+
     returns: an integer containing the number of results from a
     search query.
     """
@@ -134,11 +137,11 @@ def findResults(HTMLsoup):
 def storeInfo(contentList, kind):
     """
     Creates a list of MediaObject instances containing
-    relevant information about the results: title, date, 
+    relevant information about the results: title, date,
     desc, url and kind.
-    
+
     Kind is the website. For example: TechCrunch, NYT etc.
-    
+
     returns: a list of MediaObject objects.
     """
     # Creates an empty list
@@ -153,7 +156,7 @@ def storeInfo(contentList, kind):
         url = URLs(contentList)[i]
         kind = kind
         mediaObject = MediaObject(title, date, desc, url, kind)
-        # Appends relevant information of this MediaObject 
+        # Appends relevant information of this MediaObject
         # to the CSV file, in the same folder.
         appendCSV(mediaObject)
         objectList.append(mediaObject)
@@ -165,23 +168,23 @@ def fetchLinks(objectList):
     """
     Downloads links from Google search page. The links are fetched from
     the objectList created by storeInfo().
-    
+
     returns: nothing. It saves the files in the same folder the
     script runs from.
     """
     # this will help with duplicated titles
     j = 1
     # Since each element in the objectList is also a list of
-    # Google results, each element is considered a page in the 
+    # Google results, each element is considered a page in the
     # search routine.
     print "Iterating over", len(objectList), "pages."
     for item in objectList:
         # Iterates through the results
         for i in item:
             try:
-            # Downloads the URL content from the website to 'content' 
+            # Downloads the URL content from the website to 'content'
                 content = urllib.urlopen(i.getURL().encode('utf-8')).read()
-                # file name will look like this: 
+                # file name will look like this:
                 # '9 - Markets are rising in the east - NYT.html'
                 filename = str(j)+" - "+i.getTitle().encode('utf-8')
                 # Removes '/' from filename.
@@ -200,15 +203,17 @@ def fetchLinks(objectList):
 
     print "Links (hopefully) saved successfully. Please verify saved folder."
 
+
 def numPages(results):
     """
     Calculates the number of pages to search in Google.
     """
-    if results%10 == 0:
+    if results % 10 == 0:
         pages = results/10
     else:
         pages = results/10+1
     return pages
+
 
 def changePage(params):
     """
@@ -217,7 +222,7 @@ def changePage(params):
     is to jump 10 results per page. I've found that you
     can't set the number of results per page if you
     set a date interval.
-    
+
     returns: an URL encoded string ready to be read by the browser.
     """
     # urlparse does the job of reversing the encoded url
@@ -233,7 +238,7 @@ def changePage(params):
     # by the browser.
     newParams = urllib.urlencode(paramsDict)
 
-    return newParams 
+    return newParams
 
 
 def createCSV():
@@ -241,13 +246,13 @@ def createCSV():
     Creates an CSV file with with elements of the
     MediaObject, with a top row of 6 elements:
     Site, Title, URL, Description, Date and Misc.
-    Misc is the only column which is not populated. 
+    Misc is the only column which is not populated.
     Use it to add anything that you want.
-    
+
     returns: nothing. It creates the CSV file with one top row.
     """
     # This list serves as the top row of the CSV file
-    csvList = ['Site','Title', 'URL', 'Description', 'Date', 'Misc']
+    csvList = ['Site', 'Title', 'URL', 'Description', 'Date', 'Misc']
     # Routine to save the file
     with open('media.csv', 'w+') as csv_file:
         csv_writer = csv.writer(csv_file)
@@ -261,22 +266,24 @@ def appendCSV(mediaObject):
     """
     Appends the information of the MediaObject to the
     CSV file created by the createCSV() function.
-    
+
     returns: nothing. It appends info to the CSV file.
     """
     # This list gets relevant information from the MediaObject
     csvList = [mediaObject.getKind().encode('utf-8'),
-                    mediaObject.getTitle().encode('utf-8'),
-                    mediaObject.getURL().encode('utf-8'),
-                    mediaObject.getDesc().encode('utf-8'),
-                    mediaObject.getDate(), ""]
+               mediaObject.getTitle().encode('utf-8'),
+               mediaObject.getURL().encode('utf-8'),
+               mediaObject.getDesc().encode('utf-8'),
+               mediaObject.getDate(), ""]
     # Trying to save...
     try:
         with open('media.csv', 'a') as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(csvList)
             csv_file.close()
-        print "Information for", mediaObject.getTitle(), "appended successfully to the CSV."
+        print "Information for", mediaObject.getTitle(), "appended \
+                                                         successfully \
+                                                         to the CSV."
     # Not the best way to handle errors, I know.
     except:
         "Could not append CSV file."
@@ -286,13 +293,13 @@ def appendCSV(mediaObject):
 def titles(contentList):
     """
     Creates a list of titles, from findContent().
-    
+
     returns: a list with the titles.
     """
     # Creates a list that will be populated with titles
     titleList = []
     # In the Google Search the titles are the text
-    # in between <a></a> tags. 
+    # in between <a></a> tags.
     # BeautifulSoup find("a").get_text() grabs exactly that.
     for title in contentList:
         try:
@@ -307,7 +314,7 @@ def titles(contentList):
 def dates(contentList):
     """
     Creates a list of dates, from findContent().
-    
+
     returns: a list with the dates.
     """
     # empty list for the dates
@@ -327,7 +334,7 @@ def dates(contentList):
 def descs(contentList):
     """
     Creates a list of descriptions, from findContent().
-    
+
     returns: a list with the descriptions.
     """
     descList = []
@@ -345,7 +352,7 @@ def descs(contentList):
 def URLs(contentList):
     """
     Creates a list of URLs, from findContent().
-    
+
     returns: a list with the URLs.
     """
     urlList = []
@@ -354,7 +361,7 @@ def URLs(contentList):
             # Looks for the <a href=""> and grabs whatever's
             # in between the quotes.
             link = url.find("a").get("href")
-            # Some results come with too many parameters. This 
+            # Some results come with too many parameters. This
             # grabs the 'http://... &".
             try:
                 address = re.search(r'http.[^&]*', link).group()
