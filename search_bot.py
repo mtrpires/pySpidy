@@ -41,7 +41,9 @@ objectList = []
 # render 22 pages. 21 with 10 results, a last one with 3.
 # This is only an estimate. Google itself sometimes is
 # not 100% sure how many results it gets.
+page_number = 1
 for page in range(pages-start/10):
+    print("Page: %s" % page_number)
     # Random sleep
     randomSleep = uniform(2, 5)
     # Populates content list with Google Results
@@ -52,17 +54,19 @@ for page in range(pages-start/10):
     objectList.append(storeInfo(contentList, kind))
     # Trying not to annoy Google, we try a random
     # short wait.
-    print "Catching breath for", randomSleep, "seconds."
+    print("Catching breath for %s seconds." % randomSleep)
     sleep(randomSleep)
     # Go to the next page
-    print "Changing page."
+    divider_text = '-' * 79
+    print("Changing page.\n\n%s\n" % divider_text)
     params = changePage(params)
     # Downloads the content of the next page and converts
     # them into a BeautifulSoup object.
     currentHTML = downloadHTML(baseURL, changePage(params))
+    page_number += 1    
 
 # Uses the objectList to download all the URLs and
 # populate the CSV with relevant information.
 #fetchLinks(objectList)
 
-print "The end."
+print("The end.")
