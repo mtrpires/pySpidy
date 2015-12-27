@@ -8,6 +8,7 @@ import urllib
 import urlparse
 import mechanize
 import os
+import random
 
 from bs4 import BeautifulSoup
 from crawler_classes import MediaObject
@@ -33,10 +34,16 @@ def browserInit():
     # Follows refresh 0 but not hangs on refresh > 0
     br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
 
+    # Choose randomly a user agent
+    user_agent_browser = random.choice(('Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36' +
+                                        '(KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
+                                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10; rv:33.0)' +
+                                        'Gecko/20100101 Firefox/33.0'))
+
     # User-Agent (this is cheating, ok?)
     br.addheaders = [('User-agent',
-                      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) \
-                      Gecko/20100101 Firefox/21.0')]
+                      user_agent_browser)]
+
     return br
 
 
@@ -87,7 +94,7 @@ def downloadHTML(baseURL, params):
 
     returns: an HTML Beautiful Soup object.
     """
-    HTML = browserInit().open(baseURL+params).read()
+    HTML = browserInit().open(baseURL + params).read()
     HTMLsoup = BeautifulSoup(HTML)
     return HTMLsoup
 
@@ -124,11 +131,8 @@ def findResults(HTMLsoup):
 
     # <div id=resultStats> is where 'About xxx results (y.z seconds)' shows up
     results = HTMLsoup.find('div', id='resultStats').getText().encode('utf-8')
-    # Regex looks for a number followed by 'results': ex. "312 results"
-    search = re.search(r'\b\d+\sresults', results).group()
-    # Strips the word 'results' out of the string.
-    match = re.search(r'\d+', search).group()
-    print "Found", match, "results."
+    # Split a string and replace invalid characters
+    match = results.split(' ')[1].replace('.', '').replace(',', '')
     # converts the string into an integer and returns the number
     # of results
     return int(match)
@@ -182,11 +186,11 @@ def fetchLinks(objectList):
         # Iterates through the results
         for i in item:
             try:
-            # Downloads the URL content from the website to 'content'
+                # Downloads the URL content from the website to 'content'
                 content = urllib.urlopen(i.getURL().encode('utf-8')).read()
                 # file name will look like this:
                 # '9 - Markets are rising in the east - NYT.html'
-                filename = str(j)+" - "+i.getTitle().encode('utf-8')
+                filename = str(j) + " - " + i.getTitle().encode('utf-8')
                 # Removes '/' from filename.
                 filename = re.search(r'[^/]*', filename).group()
                 # saves in the same folder the script is run from
@@ -209,9 +213,9 @@ def numPages(results):
     Calculates the number of pages to search in Google.
     """
     if results % 10 == 0:
-        pages = results/10
+        pages = results / 10
     else:
-        pages = results/10+1
+        pages = results / 10 + 1
     return pages
 
 
@@ -258,8 +262,8 @@ def createCSV():
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(csvList)
         csv_file.close()
-    print "CSV file created successfuly."
-    print
+
+    print "CSV file created successfuly.\n"
 
 
 def appendCSV(mediaObject):
@@ -281,15 +285,17 @@ def appendCSV(mediaObject):
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(csvList)
             csv_file.close()
-        print "Information for", mediaObject.getTitle(), "appended \
-                                                         successfully \
-                                                         to the CSV."
+
+        # Log a basic information about the media object
+        print("Information for %s appended successfully to the CSV." %
+              mediaObject.getTitle()[:25])
+
     # Not the best way to handle errors, I know.
     except:
-        "Could not append CSV file."
+        print "Could not append CSV file."
 
 
-###### Helper functions
+# Helper functions
 def titles(contentList):
     """
     Creates a list of titles, from findContent().
@@ -373,4 +379,6 @@ def URLs(contentList):
             print "Error: Link not found!"
 
     return urlList
+
+
 ##################
